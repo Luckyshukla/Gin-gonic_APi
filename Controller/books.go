@@ -145,69 +145,25 @@ func Login(r *gin.Context) {
 }
 */
 
-
-
-/*
-
-type User struct {
-  ID uint64            `json:"id"`
-  Username string `json:"username"`
-  Password string `json:"password"`
-  Phone string `json:"phone"`
-}
-var user = User{
-  ID:            1,
-  Username: "username",
-  Password: "password",
-  Phone: "49123454322", //this is a random number
-}
-func Login(c *gin.Context) {
-  var u User
-  if err := c.ShouldBindJSON(&u); err != nil {
-     c.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
-     return
-  }
-  //compare the user from the request, with the one we defined:
-  if user.Username != u.Username || user.Password != u.Password {
-     c.JSON(http.StatusUnauthorized, "Please provide valid login details")
-     return
-  }
-  token, err := CreateToken(user.ID)
-  if err != nil {
-     c.JSON(http.StatusUnprocessableEntity, err.Error())
-     return
-  }
-  c.JSON(http.StatusOK, token)
-}
-
-
-*/
-
-type CheckUserInput struct {
+type CheckBookInput struct {
 	Username string `json "username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
 func Login(c *gin.Context) {
-	var user CheckUserInput
-	//var book Models.Book
 
-	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
+	var input CheckBookInput
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
-	 }
-
-	 
-	 //compare the user from the request, with the one we defined:
-
-	 //book := Models.Book{Username: user.username, Password: user.Password}
+	}
 	
-	 
-
 	var book Models.Book
-	err := Models.DB.Where("username=?  AND password = ?", user.Username,user.Password).Find(&book).Error
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Error Not found !"})
+	
+	if err := Models.DB.Where("username = ? AND password = ?",input.Username,input.Password).First(&book).Error; err != nil {
+	//if err:=  Models.DB.Where	(Models.DB.Table(Username)!=input.Username || Models.DB.Table(Password)!=input.Password).Find(&book).Error;err !=nil{
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Please provide valid login detail"})
 		return
 	}
 	
@@ -216,7 +172,8 @@ func Login(c *gin.Context) {
      	c.JSON(http.StatusUnprocessableEntity, err.Error())
      	return
   	}
-	  c.JSON(http.StatusOK, token)
+	  
+	  c.JSON(http.StatusOK, gin.H{"access token":token})
 }
 
 

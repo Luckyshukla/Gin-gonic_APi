@@ -7,3 +7,8 @@ type Book struct {
 	Username string `json:"username"`
  	Password string `json:"password"`
 }
+type API_SECRET struct {
+	Book  	 Book
+	Username string `json:"username"`
+ 	Password string `json:"password"`
+}
