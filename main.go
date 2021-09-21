@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"main.go/Controller"
 	"main.go/Models"
-	//"github.com/go-redis/redis/v7"
-    //"github.com/twinj/uuid"
 )
 
-func main() {
-	r := gin.Default()
+func main() {	
+	r := gin.New()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 	Models.ConnectDataBase()
 
 	//Basic Auth
@@ -19,10 +19,14 @@ func main() {
 	}))
 	*/
 
-	r.POST("/login", Controller.Login)
+	authorized := r.Group("/")
+	authorized.Use(Controller.Login)
+	{
+		authorized.GET("/books", Controller.FindBooks)
+	}
 	
-	r.GET("/books", Controller.FindBooks)
 	r.POST("/books", Controller.CreateBook)
+	//r.POST("/login",Controller.Login)
 	r.POST("/books/:id", Controller.FindBook)
 	r.PATCH("/books/:id", Controller.UpdateBook)
 	r.DELETE("/books/:id", Controller.DeleteBook)

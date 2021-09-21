@@ -90,61 +90,8 @@ func DeleteBook(c *gin.Context) {
 	c.JSON(200, gin.H{"data": true})
 }
 
-// JWT
-/*
-type AuthDetails struct {
-    AccessUuid string
-    UserId   uint64
-}
 
-
-
-
-
-
-func Login(r *gin.Context) {
-	var credentials Models.Book
-	err := json.NewDecoder(r.Body).Decode(&credentials)
-	if err != nil {
-		
-		r.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	expectedPassword, ok := users[credentials.Username]
-
-	if !ok || expectedPassword != credentials.Password {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
-	expirationTime := time.Now().Add(time.Minute * 5)
-
-	claims := &Claims{
-		Username: credentials.Username,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	http.SetCookie(w,
-		&http.Cookie{
-			Name:    "token",
-			Value:   tokenString,
-			Expires: expirationTime,
-		})
-
-}
-*/
-
+//Login cradintal
 type CheckBookInput struct {
 	Username string `json "username" binding:"required"`
 	Password string `json:"password" binding:"required"`
@@ -162,11 +109,10 @@ func Login(c *gin.Context) {
 	var book Models.Book
 	
 	if err := Models.DB.Where("username = ? AND password = ?",input.Username,input.Password).First(&book).Error; err != nil {
-	//if err:=  Models.DB.Where	(Models.DB.Table(Username)!=input.Username || Models.DB.Table(Password)!=input.Password).Find(&book).Error;err !=nil{
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Please provide valid login detail"})
-		return
+		return 
 	}
-	
+
 	token, err := CreateToken(book.ID)
   		if err != nil {
      	c.JSON(http.StatusUnprocessableEntity, err.Error())
@@ -234,4 +180,4 @@ func ExtractToken(r *http.Request) string {
 	}
 	return nil
   }
-
+  

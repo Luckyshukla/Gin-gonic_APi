@@ -13,6 +13,7 @@ func ConnectDataBase() {
 		panic("failed to connect database")
 	}
 	database.AutoMigrate(&Book{})
+	database.AutoMigrate(&API_SECRET{})
 
 	DB = database
 }
